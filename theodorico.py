@@ -8,22 +8,30 @@ def theodorico_bulk(file_bulk_theodorico):
     del text[0:8]
     text.pop(-1)
     text.pop(-1)
-    for line in text:
+    max_voleum_synth = 0
+    for index, line in enumerate(text):
         line = line.split()
         activ = float(line[-2])
         voleum = float(line[-1])
         time = line[1]
 
-        if activ > 20000.0:
-            activ_synth = activ
-            voleum_synth = voleum
-            time_synth = time
+        if max_voleum_synth < voleum and activ > 20000:
+            max_activ_synth = activ
+            max_voleum_synth = voleum
+            max_time_synth = time
+            next_line = text[index+1]
+            next_line = next_line.split()
+            ostatok_valuem = next_line[-1]
+            ostatok_activ = next_line[-2]
 
-    return (activ_synth,
-            voleum_synth,
-            time_synth,
+    return (max_activ_synth,
+            max_voleum_synth,
+            max_time_synth,
             seriers[1],
-            tracer)
+            tracer,
+            ostatok_valuem,
+            ostatok_activ,
+            )
 
 
 def theodorico_vials(file_vials_theodorico, seriers):
@@ -32,15 +40,11 @@ def theodorico_vials(file_vials_theodorico, seriers):
     text.pop(-1)
     vials = []
     count = 1
-    sum_voluem = 0
-    sum_activ = 0
     time, code_vial, voluem_in_vial, activ_in_vial = 0, 0, 0, 0
     for line in text:
         line = line.split()
         if count == 3:
             time = line[0]
-            sum_voluem += float(voluem_in_vial)
-            sum_activ += float(activ_in_vial)
             vials.append({"Код флакона": code_vial,
                           "Активность во флаконе": activ_in_vial,
                           "Обьем во флаконе": voluem_in_vial,
@@ -57,4 +61,4 @@ def theodorico_vials(file_vials_theodorico, seriers):
             activ_in_vial = line[0]
             count += 1
 
-    return vials, sum_voluem, sum_activ
+    return vials
