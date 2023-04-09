@@ -3,8 +3,6 @@ from recipy import demand_invoice, recipients_name, type_of_tracer
 
 def theodorico_bulk(file_bulk_theodorico):
     text = file_bulk_theodorico
-    seriers = text[1].split()
-    tracer = type_of_tracer(seriers[1])
     del text[0:8]
     text.pop(-1)
     text.pop(-1)
@@ -27,15 +25,19 @@ def theodorico_bulk(file_bulk_theodorico):
     return (max_activ_synth,
             max_voleum_synth,
             max_time_synth,
-            seriers[1],
-            tracer,
             ostatok_valuem,
             ostatok_activ,
             )
 
 
-def theodorico_vials(file_vials_theodorico, seriers):
+def theodorico_vials(file_vials_theodorico):
     text = file_vials_theodorico
+    if "ОТЧЁТ BULK Theodorico 2" in text:
+        seriers = text[1].split() # для русского отчета
+    else:
+        seriers = text[2].split() # для пендоского
+    seriers = seriers[1]
+    tracer = type_of_tracer(seriers[1])
     del text[0:7]
     text.pop(-1)
     vials = []
@@ -61,4 +63,4 @@ def theodorico_vials(file_vials_theodorico, seriers):
             activ_in_vial = line[0]
             count += 1
 
-    return vials
+    return vials, tracer, seriers

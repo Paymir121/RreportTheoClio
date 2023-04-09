@@ -9,7 +9,7 @@ from recipy import read_pdf
 
 
 def write_excel(data, vials, seriers, ostatok_voluem, ostatok_activ):
-    df = pd.DataFrame(data, index=[0])# Добавляем инфу об серии из отчета по синтезу и балку
+    df = pd.DataFrame(data, index=[0]) # Добавляем инфу об серии из отчета по синтезу и балку
     df2 = pd.DataFrame(vials)
     if 'K' in seriers:
         CF18T = {"н/п": ["н/п", "н/п", "УКТ CF18T №A"],
@@ -18,14 +18,16 @@ def write_excel(data, vials, seriers, ostatok_voluem, ostatok_activ):
         CF18T = {"н/п": ["", "", ""],
                  "н/п1": ["", "", ""], }
     df3 = pd.DataFrame(CF18T)
-    ostatok = {"остаток активности": [ostatok_activ],
-               " остаток обьем": [ostatok_voluem], }
+
+    ostatok = {"Остаток активности": [ostatok_activ, ],
+               "Остаток обьем": [ostatok_voluem, ], }
+    print(ostatok)
     df4 = pd.DataFrame(ostatok)
     df = pd.concat([df, df2, ], axis=1) # Добавляем флаконы
     df = pd.concat([df, df3, ], axis=1) # Добавляем шляпу про контейенеы
     df = pd.concat([df, df4, ], axis=1) # ДОбавляем шляпу про остатки 
     print(df)
-    # df.to_excel('./teams.xlsx')
+    df.to_excel('./report_new.xlsx')
 
 
 def synthese_report(path_pdf):
@@ -78,9 +80,9 @@ if __name__ == "__main__":
         ostatok_voluem = volume - sum_voluem_in_vials
         ostatok_activ = BULK_Activity - sum_activ_in_vials
     elif device == "theodorico":
-        BULK_Activity, volume, time_of_sert, seriers, tracer, ostatok_voluem, ostatok_activ = theodorico_bulk(file_bulk_theodorico)
+        BULK_Activity, volume, time_of_sert, ostatok_voluem, ostatok_activ = theodorico_bulk(file_bulk_theodorico)
         print("Балк прочитан")
-        vials = theodorico_vials(file_vials_theodorico, seriers)
+        vials, tracer, seriers = theodorico_vials(file_vials_theodorico)
         print("Виалки прочитаны")
     else:
         print(" Нетю файликов")
