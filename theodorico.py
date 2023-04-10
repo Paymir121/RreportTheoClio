@@ -24,8 +24,6 @@ def theodorico_bulk(file_bulk_theodorico):
             activ = float(line[-2])
             voleum = float(line[-1])
         time = line[1]
-        print(line)
-        print(activ, voleum)
         if max_voleum_synth < voleum and activ > 20000:
             max_activ_synth = activ
             max_voleum_synth = voleum
