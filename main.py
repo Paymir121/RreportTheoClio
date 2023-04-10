@@ -28,6 +28,8 @@ def write_excel(data, vials, seriers, ostatok_voluem, ostatok_activ):
     df = pd.concat([df, df4, ], axis=1) # ДОбавляем шляпу про остатки 
     print(df)
     df.to_excel('./report_new.xlsx')
+    print("<----------------------Файл создан------------------------------------>")
+    input('Нажмите Enter для выхода\n')
 
 
 def synthese_report(path_pdf):

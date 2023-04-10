@@ -7,6 +7,10 @@ def theodorico_bulk(file_bulk_theodorico):
     text.pop(-1)
     text.pop(-1)
     max_voleum_synth = 0
+    max_activ_synth = 0
+    max_time_synth = 0
+    ostatok_valuem = 0
+    ostatok_activ = 0
     for index, line in enumerate(text):
         line = line.split()
         activ = float(line[-2])
