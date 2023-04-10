@@ -1,7 +1,10 @@
 from recipy import demand_invoice, recipients_name, type_of_tracer
+from typing import List, Dict, Union
+from wrapper import timer
 
 
-def clio_bulk(file_clio):
+@timer
+def clio_bulk(file_clio: str) -> List[Union[str, float]]:
     text = file_clio
     line_activ = text[6].split()
     activ_synth = line_activ[2]
@@ -22,7 +25,8 @@ def clio_bulk(file_clio):
             tracer)
 
 
-def clio_vials(file_clio, seriers):
+@timer
+def clio_vials(file_clio: str, seriers: str) -> Union[Dict[str, Union[str, float]], str]:
     text = file_clio
     del text[0:12]  # Убираем строчки сверху, оставляем только таблицу с данными
     text.pop(-1)  # Убираем строчки снизу
@@ -41,11 +45,11 @@ def clio_vials(file_clio, seriers):
             if "ARHIV" in code_vial:
                 code_vial = 'архив'  # Физики попросили что бы было по русски
             voluem_in_vial = "0" + voluem_in_vial  # в Clio если обьем меньше 1.00, то первый 0 не пишется, тут добовляем его
-            sum_voluem += float(voluem_in_vial.replace(',', "."))  
+            sum_voluem += float(voluem_in_vial.replace(',', "."))
             sum_activ += float(activ_in_vial.replace(',', "."))
             vials.append({"Код флакона": code_vial,
-                          "Активность во флаконе": activ_in_vial,
-                          "Обьем во флаконе": voluem_in_vial,
+                          "Активность во флаконе": float(activ_in_vial),
+                          "Обьем во флаконе": float(voluem_in_vial),
                           "Назначение": recipients_name(code_vial),
                           "Время фасовки": time,
                           "Заявка": demand_invoice(code_vial, seriers),

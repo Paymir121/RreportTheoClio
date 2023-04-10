@@ -1,7 +1,10 @@
 from recipy import demand_invoice, recipients_name, type_of_tracer
+from typing import List, Dict, Union
+from wrapper import timer
 
 
-def theodorico_bulk(file_bulk_theodorico):
+@timer
+def theodorico_bulk(file_bulk_theodorico: List[str]) -> List[Union[str, float]]:
     text = file_bulk_theodorico
 
     if "ОТЧЁТ BULK Theodorico 2" in text:
@@ -40,12 +43,13 @@ def theodorico_bulk(file_bulk_theodorico):
     return (max_activ_synth,
             max_voleum_synth,
             max_time_synth,
-            ostatok_valuem,
-            ostatok_activ,
+            float(ostatok_valuem),
+            float(ostatok_activ),
             )
 
 
-def theodorico_vials(file_vials_theodorico):
+@timer
+def theodorico_vials(file_vials_theodorico: str) -> Union[Dict[str, Union[str, float]], str]:
     text = file_vials_theodorico
     seriers = text[2].split()
     seriers = seriers[1]
@@ -60,8 +64,8 @@ def theodorico_vials(file_vials_theodorico):
         if count == 3:  # Так как каждая строка в таблицу содержит в себе 3 различных строк, то их нужно прочитывать по разному. В 3 строчке есть только время замера
             time = line[0]
             vials.append({"Код флакона": code_vial,
-                          "Активность во флаконе": activ_in_vial,
-                          "Обьем во флаконе": voluem_in_vial,
+                          "Активность во флаконе": float(activ_in_vial),
+                          "Обьем во флаконе": float(voluem_in_vial),
                           "Назначение": recipients_name(code_vial),
                           "Время фасовки": time,
                           "Заявка": demand_invoice(code_vial, seriers),

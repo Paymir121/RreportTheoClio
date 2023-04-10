@@ -1,9 +1,10 @@
 import datetime
 import re
 import pdfplumber
+from typing import List
 
 
-def type_of_tracer(seriers):
+def type_of_tracer(seriers: str) -> str:
     '''Возвращает короткий код для различных Tracers'''
     if 'F1' in seriers:
         return 'ФДГ, 18F'
@@ -19,7 +20,7 @@ def type_of_tracer(seriers):
         return 'ДОПА, 18F'
 
 
-def recipients_name(code_vial):
+def recipients_name(code_vial: str) -> str:
     """Возвращает название заказчика"""
     if 'KK' in code_vial or 'Архив' in code_vial or 'ARHIV' in code_vial:
         return "Лаборатория контроля качества"
@@ -30,14 +31,14 @@ def recipients_name(code_vial):
     else:
         return "ООО «РМС"
 
-   
-def data_request(seriers):
+
+def data_request(seriers: str) -> str:
     """Дата заявки ОЛД с учетом выходных"""
     data_now = seriers[-6:][0:2] + '.' + seriers[-6:][2:4] + '.20' + seriers[-6:][4:]
     data_now = datetime.datetime.strptime(data_now, '%d.%m.%Y')
     weekd = data_now.weekday()
     if weekd == 0:
-        data_now -= datetime.timedelta(days=3)  # Если понедельник 
+        data_now -= datetime.timedelta(days=3)  # Если понедельник
     elif weekd == 6:
         data_now -= datetime.timedelta(days=2)  # Если воскресенье
     else:
@@ -45,7 +46,7 @@ def data_request(seriers):
     return data_now.strftime('%d.%m.%Y')
 
 
-def demand_invoice(code_vial, seriers):
+def demand_invoice(code_vial: str, seriers: str) -> str:
     """Для ОЛД и ЛКК возвращает номер серии и дату заявки"""
     number = re.sub(r"F\w+", "", seriers)  # Убираем все знаки/цифры/буквы после ПЕРВОЙ буквы F
     if 'KK' in code_vial or 'Архив' in code_vial or 'ARHIV' in code_vial:
@@ -58,7 +59,7 @@ def demand_invoice(code_vial, seriers):
         return ''
 
 
-def read_pdf(path_pdf):
+def read_pdf(path_pdf: str) -> List[str]:
     """Чтение PDF файлов"""
     with pdfplumber.open(path_pdf) as pdf:
         page = pdf.pages[0]
