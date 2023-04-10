@@ -3,28 +3,41 @@ from recipy import demand_invoice, recipients_name, type_of_tracer
 
 def theodorico_bulk(file_bulk_theodorico):
     text = file_bulk_theodorico
-    del text[0:8]
+
+    if "ОТЧЁТ BULK Theodorico 2" in text:
+        leng = 'rus'
+        del text[0:8]
+
+    else:
+        leng = 'eng'
+        del text[0:4]
     text.pop(-1)
     text.pop(-1)
-    max_voleum_synth = 0
-    max_activ_synth = 0
-    max_time_synth = 0
-    ostatok_valuem = 0
-    ostatok_activ = 0
+    max_voleum_synth, max_activ_synth, max_time_synth, ostatok_valuem, ostatok_activ = 0, 0, 0, 0, 0
+
     for index, line in enumerate(text):
         line = line.split()
-        activ = float(line[-2])
-        voleum = float(line[-1])
+        if leng == 'rus':
+            activ = float(line[-3])
+            voleum = float(line[-2])
+        else:
+            activ = float(line[-2])
+            voleum = float(line[-1])
         time = line[1]
-
+        print(line)
+        print(activ, voleum)
         if max_voleum_synth < voleum and activ > 20000:
             max_activ_synth = activ
             max_voleum_synth = voleum
             max_time_synth = time
             next_line = text[index+1]
             next_line = next_line.split()
-            ostatok_valuem = next_line[-1]
-            ostatok_activ = next_line[-2]
+            if leng == "rus":
+                ostatok_valuem = next_line[-2]
+                ostatok_activ = next_line[-3]
+            else:
+                ostatok_valuem = next_line[-1]
+                ostatok_activ = next_line[-2]
 
     return (max_activ_synth,
             max_voleum_synth,
@@ -36,12 +49,9 @@ def theodorico_bulk(file_bulk_theodorico):
 
 def theodorico_vials(file_vials_theodorico):
     text = file_vials_theodorico
-    if "ОТЧЁТ BULK Theodorico 2" in text:
-        seriers = text[1].split() # для русского отчета
-    else:
-        seriers = text[2].split() # для пендоского
+    seriers = text[2].split()
     seriers = seriers[1]
-    tracer = type_of_tracer(seriers[1])
+    tracer = type_of_tracer(seriers)
     del text[0:7]
     text.pop(-1)
     vials = []

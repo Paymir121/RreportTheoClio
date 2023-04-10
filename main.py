@@ -73,19 +73,19 @@ if __name__ == "__main__":
             device = 'theodorico'
             file_bulk_theodorico = text
 
-    print("<-------------- Фасуем на ", device, " --------------------->")
+    print("<--------------------- Фасуем на ", device, " ------------------------->")
     if device == "clio":
         BULK_Activity, volume, time_of_sert, seriers, tracer = clio_bulk(file_clio)
         print("Балк прочитан")
         vials, sum_voluem_in_vials, sum_activ_in_vials = clio_vials(file_clio, seriers)
-        print("Виалки прочитаны")
+        print(f"Виалки прочитаны. Серия: {seriers}, Обьем серии: {volume}, Активность: {BULK_Activity}, Время изготовления: {time_of_sert}")
         ostatok_voluem = volume - sum_voluem_in_vials
         ostatok_activ = BULK_Activity - sum_activ_in_vials
     elif device == "theodorico":
         BULK_Activity, volume, time_of_sert, ostatok_voluem, ostatok_activ = theodorico_bulk(file_bulk_theodorico)
-        print("Балк прочитан")
+        print("Балк прочитан." )
         vials, tracer, seriers = theodorico_vials(file_vials_theodorico)
-        print("Виалки прочитаны")
+        print(f"Виалки прочитаны. Серия: {seriers}, Обьем серии: {volume}, Активность: {BULK_Activity}, Время изготовления: {time_of_sert}")
     else:
         print(" Нетю файликов")
 
