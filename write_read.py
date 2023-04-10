@@ -6,6 +6,38 @@ import pandas as pd
 
 
 @timer
+def read_pdf_files_in_folder(pdf_files: List[str]) -> List[str]:
+    """Читаем все pdf файлы и среди них ищем те кто содержат ключевые слова"""
+    device: str = 'Пусто'
+    for file in pdf_files:
+        text = read_pdf(file)
+        if "Synthesis Report" in text:
+            print("Synthesis Repor найден")
+            synth = synthese_report(file)
+        elif "ОТЧЁТ ФАСОВКИ Theodorico 2" in text:
+            print("ОТЧЁТ ФАСОВКИ Theodorico 2 найден")
+            device = 'theodorico'
+            file_vials_theodorico = text
+        elif "Distribution report" in text:
+            print("Distribution report найден")
+            device = 'clio'
+            file_clio = text
+        elif "ОТЧЁТ BULK Theodorico 2" in text or "BULK Report" in text:
+            print("ОТЧЁТ BULK Theodorico 2 найден")
+            device = 'theodorico'
+            file_bulk_theodorico = text
+
+    print("<--------------------- Фасуем на ", device, " ------------------------------>")
+    try:
+        if device == "clio":
+            return device, file_clio, file_clio, synth
+        else:
+            return device, file_bulk_theodorico, file_vials_theodorico, synth
+    except UnboundLocalError:
+        input('Аллах видит, что нет тут файлов\n')
+
+
+@timer
 def write_excel(data: Dict[str, Union[float, str]],
                 vials: Dict[str, Union[str, float]],
                 seriers: str,
@@ -32,33 +64,7 @@ def write_excel(data: Dict[str, Union[float, str]],
     print(df)
     df.to_excel('./report_new.xlsx')
     print("<----------------------Файл создан---------------------------------------->")
-    # input('Нажмите Enter для выхода\n')
+    input('Нажмите Enter для выхода\n')
 
 
-@timer
-def read_pdf_files_in_folder(pdf_files: List[str]) -> List[str]:
-    """Читаем все pdf файлы и среди них ищем те кто содержат ключевые слова"""
-    device: str = ''
-    for file in pdf_files:
-        text = read_pdf(file)
-        if "Synthesis Report" in text:
-            print("Synthesis Repor найден")
-            synth = synthese_report(file)
-        elif "ОТЧЁТ ФАСОВКИ Theodorico 2" in text:
-            print("ОТЧЁТ ФАСОВКИ Theodorico 2 найден")
-            device = 'theodorico'
-            file_vials_theodorico = text
-        elif "Distribution report" in text:
-            print("Distribution report найден")
-            device = 'clio'
-            file_clio = text
-        elif "ОТЧЁТ BULK Theodorico 2" in text or "BULK Report" in text:
-            print("ОТЧЁТ BULK Theodorico 2 найден")
-            device = 'theodorico'
-            file_bulk_theodorico = text
 
-    print("<--------------------- Фасуем на ", device, " ------------------------------>")
-    if device == "clio":
-        return device, file_clio, file_clio, synth
-    else:
-        return device,  file_bulk_theodorico, file_vials_theodorico, synth

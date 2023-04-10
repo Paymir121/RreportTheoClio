@@ -2,6 +2,7 @@ import pdfplumber
 from typing import Union
 from wrapper import timer
 
+
 @timer
 def synthese_report(path_pdf: str) -> Union[float, int]:
     """Достаем из отчета по синтезу активность пришедшую с циклотрона и время синтеза"""
