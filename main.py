@@ -8,8 +8,10 @@ from clio import clio_bulk, clio_vials
 from recipy import read_pdf
 
 
+
 def write_excel(data, vials, seriers, ostatok_voluem, ostatok_activ):
-    df = pd.DataFrame(data, index=[0]) # Добавляем инфу об серии из отчета по синтезу и балку
+    """ Записываем необходимые данные в excel файл"""
+    df = pd.DataFrame(data, index=[0])  # Добавляем инфу об серии из отчета по синтезу и балку
     df2 = pd.DataFrame(vials)
     if 'K' in seriers:
         CF18T = {"н/п": ["н/п", "н/п", "УКТ CF18T №A"],
@@ -23,17 +25,17 @@ def write_excel(data, vials, seriers, ostatok_voluem, ostatok_activ):
                "Остаток обьем": [ostatok_voluem, ], }
     print(ostatok)
     df4 = pd.DataFrame(ostatok)
-    df = pd.concat([df, df2, ], axis=1) # Добавляем флаконы
-    df = pd.concat([df, df3, ], axis=1) # Добавляем шляпу про контейенеы
-    df = pd.concat([df, df4, ], axis=1) # ДОбавляем шляпу про остатки 
+    df = pd.concat([df, df2, ], axis=1)  # Добавляем флаконы
+    df = pd.concat([df, df3, ], axis=1)  # Добавляем шляпу про контейенеы
+    df = pd.concat([df, df4, ], axis=1)  # ДОбавляем шляпу про остатки
     print(df)
     df.to_excel('./report_new.xlsx')
     print("<----------------------Файл создан---------------------------------------->")
-    input('Нажмите Enter для выхода\n')
+    # input('Нажмите Enter для выхода\n')
 
 
 def synthese_report(path_pdf):
-    # path_pdf = file
+    """Достаем из отчета по синтезу активность пришедшую с циклотрона и время синтеза"""
     with pdfplumber.open(path_pdf) as pdf:
         page = pdf.pages[0]
         text = page.extract_text()
@@ -50,12 +52,10 @@ def synthese_report(path_pdf):
         return (activity_synth, time_of_synth)
 
 
-if __name__ == "__main__":
-    pdf_files = glob.glob('*.pdf') # Смотрим все файлики
-
-    print("<----------------------Погнали--------------------------------------------->")
+def read_pdf_files_infolder(pdf_files):
+    """Читаем все pdf файлы и среди них ищем те кто содержат ключевые слова"""
     device = ''
-    for file in pdf_files: # Читаем все pdf файлы и среди них ищем те кто содержат ключевые слова
+    for file in pdf_files:
         text = read_pdf(file)
         if "Synthesis Report" in text:
             print("Synthesis Repor найден")
@@ -75,20 +75,31 @@ if __name__ == "__main__":
 
     print("<--------------------- Фасуем на ", device, " ------------------------------>")
     if device == "clio":
-        BULK_Activity, volume, time_of_sert, seriers, tracer = clio_bulk(file_clio)
+        return device, file_clio, file_clio, synth
+    else:
+        return device,  file_bulk_theodorico, file_vials_theodorico, synth
+
+
+if __name__ == "__main__":
+    pdf_files = glob.glob('*.pdf')  # Смотрим все файлики
+    print("<----------------------Погнали--------------------------------------------->")
+    device, file_bulk, file_vials, synth = read_pdf_files_infolder(pdf_files)
+    print("<----------------------Парсим--------------------------------------------->")
+    if device == "clio":
+        BULK_Activity, volume, time_of_sert, seriers, tracer = clio_bulk(file_bulk)
         print("Балк прочитан")
-        vials, sum_voluem_in_vials, sum_activ_in_vials = clio_vials(file_clio, seriers)
+        vials, sum_voluem_in_vials, sum_activ_in_vials = clio_vials(file_vials, seriers)
         print(f"Виалки прочитаны. Серия: {seriers}, Обьем серии: {volume}, Активность: {BULK_Activity}, Время изготовления: {time_of_sert}")
         ostatok_voluem = volume - sum_voluem_in_vials
         ostatok_activ = BULK_Activity - sum_activ_in_vials
     elif device == "theodorico":
-        BULK_Activity, volume, time_of_sert, ostatok_voluem, ostatok_activ = theodorico_bulk(file_bulk_theodorico)
-        print("Балк прочитан." )
-        vials, tracer, seriers = theodorico_vials(file_vials_theodorico)
+        BULK_Activity, volume, time_of_sert, ostatok_voluem, ostatok_activ = theodorico_bulk(file_bulk)
+        print("Балк прочитан.")
+        vials, tracer, seriers = theodorico_vials(file_vials)
         print(f"Виалки прочитаны. Серия: {seriers}, Обьем серии: {volume}, Активность: {BULK_Activity}, Время изготовления: {time_of_sert}")
     else:
         print(" Нетю файликов")
-
+    print("<------------ Передаем данные парсинга в словарь-------------------------->")
     data_in_report = {
         "Активность пришедшей на модуль": synth[0],
         "Tracer": tracer,

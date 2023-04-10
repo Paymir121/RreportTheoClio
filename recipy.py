@@ -47,7 +47,7 @@ def data_request(seriers):
 
 def demand_invoice(code_vial, seriers):
     """Для ОЛД и ЛКК возвращает номер серии и дату заявки"""
-    number = re.sub(r"F\w+", "", seriers)
+    number = re.sub(r"F\w+", "", seriers)  # Убираем все знаки/цифры/буквы после ПЕРВОЙ буквы F
     if 'KK' in code_vial or 'Архив' in code_vial or 'ARHIV' in code_vial:
         data = seriers[-6:][0:2] + '.' + seriers[-6:][2:4] + '.20' + seriers[-6:][4:]
         return f'№{number} от {data}'
