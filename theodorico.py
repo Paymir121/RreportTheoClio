@@ -4,7 +4,7 @@ from wrapper import timer
 
 
 @timer
-def theodorico_bulk(file_bulk_theodorico: List[str]) -> List[Union[str, float]]:
+def theodorico_bulk(file_bulk_theodorico: List[str]) -> Dict[str, Union[str, float]]:
     text = file_bulk_theodorico
 
     if "ОТЧЁТ BULK Theodorico 2" in text:
@@ -16,8 +16,8 @@ def theodorico_bulk(file_bulk_theodorico: List[str]) -> List[Union[str, float]]:
         del text[0:4]  # Убираем строчки сверху, оставляем только таблицу с данными
     text.pop(-1)  # Убираем строчки снизу
     text.pop(-1)
-    max_voleum_synth, max_activ_synth, max_time_synth, ostatok_valuem, ostatok_activ = 0, 0, 0, 0, 0
-
+    result = {}
+    result["Активность с фасовщика"] = 0
     for index, line in enumerate(text):
         line = line.split()
         if leng == 'rus':  # Отчеты на русском и англ имеют разное рассположение столбцов
@@ -27,29 +27,24 @@ def theodorico_bulk(file_bulk_theodorico: List[str]) -> List[Union[str, float]]:
             activ = float(line[-2])
             voleum = float(line[-1])
         time = line[1]
-        if max_voleum_synth < voleum and activ > 20000:
-            max_activ_synth = activ
-            max_voleum_synth = voleum
-            max_time_synth = time
+        if result["Активность с фасовщика"] < voleum and activ > 20000:
+            result["Активность с фасовщика"] = activ
+            result["Обьем с фасовщика"] = voleum
+            result["Время с фасовщика"] = time
             next_line = text[index+1]
             next_line = next_line.split()
             if leng == "rus":
-                ostatok_valuem = next_line[-2]
-                ostatok_activ = next_line[-3]
+                result["остаток обьема"] = next_line[-2]
+                result["остаток активности"] = next_line[-3]
             else:
-                ostatok_valuem = next_line[-1]
-                ostatok_activ = next_line[-2]
+                result["остаток обьема"] = next_line[-1]
+                result["остаток активности"] = next_line[-2]
 
-    return (max_activ_synth,
-            max_voleum_synth,
-            max_time_synth,
-            float(ostatok_valuem),
-            float(ostatok_activ),
-            )
+    return result
 
 
 @timer
-def theodorico_vials(file_vials_theodorico: str) -> Union[Dict[str, Union[str, float]], str]:
+def theodorico_vials(file_vials_theodorico: List[str]) -> Union[str, List[Dict[str, Union[str, float]]]]:
     text = file_vials_theodorico
     seriers = text[2].split()
     seriers = seriers[1]

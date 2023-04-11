@@ -30,9 +30,19 @@ def read_pdf_files_in_folder(pdf_files: List[str]) -> List[str]:
     print("<--------------------- Фасуем на ", device, " ------------------------------>")
     try:
         if device == "clio":
-            return device, file_clio, file_clio, synth
+            files = {"Фасовщик": device,
+                     "Отчет Балка": file_clio,
+                     "Отчет с флаконами": file_clio,
+                     "Отчет с модуля синтеза": synth,
+                     }
+            return files
         else:
-            return device, file_bulk_theodorico, file_vials_theodorico, synth
+            files = {"Фасовщик": device,
+                     "Отчет Балка": file_bulk_theodorico,
+                     "Отчет с флаконами": file_vials_theodorico,
+                     "Отчет с модуля синтеза": synth,
+                     }
+            return files
     except UnboundLocalError:
         input('Аллах видит, что нет тут файлов\n')
 

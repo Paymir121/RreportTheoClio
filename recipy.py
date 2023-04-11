@@ -25,7 +25,7 @@ def recipients_name(code_vial: str) -> str:
     if 'KK' in code_vial or 'Архив' in code_vial or 'ARHIV' in code_vial:
         return "Лаборатория контроля качества"
     elif 'OLD' in code_vial:
-        return "Отдление лучевой диагностики ООО \"ПЭТ-Технолоджи Балашиха\""
+        return "Отделение лучевой диагностики ООО \"ПЭТ-Технолоджи Балашиха\""
     elif 'WASH' in code_vial or 'wash' in code_vial or 'BPT' in code_vial:
         return "мусор"
     else:
