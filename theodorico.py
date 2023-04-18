@@ -1,5 +1,6 @@
-from recipy import demand_invoice, recipients_name, type_of_tracer
 from typing import List, Dict, Union
+
+from recipy import demand_invoice, recipients_name, type_of_tracer
 from wrapper import timer
 
 
