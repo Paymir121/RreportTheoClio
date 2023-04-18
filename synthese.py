@@ -1,5 +1,6 @@
 import pdfplumber
 from typing import Union
+
 from wrapper import timer
 
 
