@@ -1,8 +1,10 @@
 from typing import List, Dict, Union
+import pandas as pd
+
 from recipy import read_pdf
 from synthese import synthese_report
 from wrapper import timer
-import pandas as pd
+
 
 
 @timer
